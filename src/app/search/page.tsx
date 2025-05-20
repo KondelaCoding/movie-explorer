@@ -1,12 +1,9 @@
-// import { Pagination } from "@/components/ui/pagination";
 import Search from "@/components/Search";
-// import Table from "@/app/ui/invoices/table";
-// import { CreateInvoice } from "@/app/ui/invoices/buttons";
-// import { lusitana } from "@/app/ui/fonts";
-// import { InvoicesTableSkeleton } from "@/app/ui/skeletons";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Table from "@/components/Table";
+import { Separator } from "@/components/ui/separator";
+import PaginationComponent from "@/components/PaginationComponent";
 
 const Page = async (props: { searchParams: Promise<{ query?: string; page?: string }> }) => {
   const searchParams = await props.searchParams;
@@ -14,18 +11,23 @@ const Page = async (props: { searchParams: Promise<{ query?: string; page?: stri
   const currentPage = Number(searchParams.page) || 1;
 
   return (
-    <div className="w-full">
-      <div className="flex w-full items-center justify-between">
-        <h1 className="text-2xl">Invoices</h1>
+    <div className="global-grid mt-20 flex-col">
+      <h3 className="font-light col-span-12">Szukaj filmów i seriali</h3>
+      <div className="flex items-center justify-between gap-2 col-span-6">
+        <Search />
       </div>
-      <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
-        <Search placeholder="Search invoices..." />
-        {/* <CreateInvoice /> */}
-      </div>
+      <Separator orientation="horizontal" className="col-span-12" />
+      {query ? (
+        <p className="col-span-12 mt-5 ">
+          Wyniki wyszukiwania dla: <q className="text-primary">{query}</q>
+        </p>
+      ) : null}
       <Suspense key={query + currentPage} fallback={<Skeleton className="w-40 h-10" />}>
-        <Table query={query} currentPage={currentPage} />
+        <Table query={query} page={1} />
       </Suspense>
-      <div className="mt-5 flex w-full justify-center">{/* <Pagination totalPages={totalPages} /> */}</div>
+      <div className="mt-20 flex w-full justify-center col-span-12">
+        <PaginationComponent />
+      </div>
     </div>
   );
 };

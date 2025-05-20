@@ -26,8 +26,7 @@ const BannerCarousel = () => {
       moviePosterTitles.forEach(async (title) => {
         const movies = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/poster?title=${title}`);
         const data = await movies.json();
-        console.log(data.Poster);
-        setImages((prev) => [...prev, data.Poster]);
+        setImages((prev) => [...prev, data]);
       });
     }
     fetchMovies();
@@ -37,7 +36,7 @@ const BannerCarousel = () => {
     <div className="global-grid flex-col">
       <h2 className="font-light">Polecane</h2>
       <Carousel
-        className="w-full col-span-12"
+        className="w-full col-span-12 drop-shadow-md"
         opts={{ align: "center", loop: true }}
         plugins={[Autoplay({ delay: 5000 })]}
       >

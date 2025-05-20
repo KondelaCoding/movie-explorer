@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Film, Moon, Sun, Search, Heart } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/components/ui/theme-provider";
 import { motion, AnimatePresence } from "framer-motion";
+import { Skeleton } from "./ui/skeleton";
 
 const Navbar = () => {
   const theme = useTheme();
@@ -42,7 +43,7 @@ const Navbar = () => {
                 Szukaj
               </Button>
             </Link>
-            {mounted && (
+            {mounted ? (
               <Button
                 size="lg"
                 variant="ghost"
@@ -77,6 +78,8 @@ const Navbar = () => {
                   )}
                 </AnimatePresence>
               </Button>
+            ) : (
+              <Skeleton className="mx-4 w-8 h-8 rounded-full" />
             )}
           </div>
         </div>
