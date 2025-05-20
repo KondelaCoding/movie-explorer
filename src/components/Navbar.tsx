@@ -16,7 +16,7 @@ const Navbar = () => {
   }, []);
 
   return (
-    <div className="fixed top-0 z-50 w-full bg-background">
+    <div className="fixed top-0 z-50 w-full bg-background border-b">
       <div className="global-grid items-center justify-between">
         <Link href="/" className="col-span-3  inline-flex items-center gap-3">
           <h3>🎬</h3>

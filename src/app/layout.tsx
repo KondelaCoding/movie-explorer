@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Montserrat, Roboto } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -34,15 +35,17 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  //TODO: use context to set theme instead of Provider idk whats that but look into it
   return (
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${montserrat.variable} ${roboto.variable} font-[family-name:var(--font-montserrat)] antialiased`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <Navbar />
-          <div className="pt-10">{children}</div>
+          <div className="min-h-dvh grid grid-rows-[auto_1fr_auto] grid-cols-1">
+            <Navbar />
+            <div className="pt-10">{children}</div>
+            <Footer />
+          </div>
         </ThemeProvider>
       </body>
     </html>
