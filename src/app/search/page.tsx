@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Table from "@/components/Table";
 import { Separator } from "@/components/ui/separator";
-import PaginationComponent from "@/components/PaginationComponent";
+import { SearchIcon } from "lucide-react";
 
 const Page = async (props: { searchParams: Promise<{ query?: string; page?: string }> }) => {
   const searchParams = await props.searchParams;
@@ -12,7 +12,10 @@ const Page = async (props: { searchParams: Promise<{ query?: string; page?: stri
 
   return (
     <div className="global-grid mt-20 flex-col">
-      <h3 className="font-light col-span-12">Szukaj filmów i seriali</h3>
+      <h3 className="font-light col-span-12 inline-flex items-center gap-2">
+        <SearchIcon strokeWidth={1} />
+        Szukaj filmów i seriali
+      </h3>
       <div className="flex items-center justify-between gap-2 col-span-6">
         <Search />
       </div>
@@ -23,11 +26,8 @@ const Page = async (props: { searchParams: Promise<{ query?: string; page?: stri
         </p>
       ) : null}
       <Suspense key={query + currentPage} fallback={<Skeleton className="w-40 h-10" />}>
-        <Table query={query} page={1} />
+        <Table query={query} page={currentPage} />
       </Suspense>
-      <div className="mt-20 flex w-full justify-center col-span-12">
-        <PaginationComponent />
-      </div>
     </div>
   );
 };

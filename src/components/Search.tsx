@@ -7,8 +7,10 @@ import { SearchIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useCache } from "@/hooks/useCache";
 import { Skeleton } from "./ui/skeleton";
 import { Movie } from "@/types";
+import Link from "next/link";
 
 const Search = ({ placeholder }: { placeholder?: string }) => {
   const { replace } = useRouter();
@@ -20,17 +22,30 @@ const Search = ({ placeholder }: { placeholder?: string }) => {
 
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
+  const { get, set } = useCache<any>();
+
   useEffect(() => {
     if (debouncedSearchTerm.trim().length === 0) {
       setResults([]);
       setShowMenu(false);
       return;
     }
-    fetch(`/api/movie?query=${debouncedSearchTerm}`)
+
+    const cacheKey = debouncedSearchTerm.toLowerCase();
+
+    const cached = get(cacheKey);
+    if (cached) {
+      setResults(cached.Search || []);
+      setShowMenu(true);
+      return;
+    }
+
+    fetch(`/api/movie-search?query=${debouncedSearchTerm}`)
       .then((res) => res.json())
       .then((data) => {
         setResults(data.Search || []);
         setShowMenu(true);
+        set(cacheKey, data); // cache the result
       });
   }, [debouncedSearchTerm]);
 
@@ -65,7 +80,6 @@ const Search = ({ placeholder }: { placeholder?: string }) => {
         onChange={(e) => setSearchTerm(e.target.value)}
         value={searchTerm}
         onFocus={() => results.length > 0 && setShowMenu(true)}
-        autoComplete="off"
       />
       <Button className="text-white" type="submit">
         <SearchIcon />
@@ -74,13 +88,10 @@ const Search = ({ placeholder }: { placeholder?: string }) => {
       {showMenu && results.length > 0 && (
         <div className="absolute left-0 top-full mt-2 w-full bg-background border rounded shadow-lg z-50 max-h-72 overflow-y-auto">
           {results.map((movie: Movie) => (
-            <div
+            <Link
               key={movie.imdbID}
               className="flex gap-3 px-4 py-2 hover:bg-accent cursor-pointer"
-              onClick={() => {
-                replace(`/movie/${movie.imdbID}`);
-                setShowMenu(false);
-              }}
+              href={`/movie/${movie.imdbID}`}
             >
               {movie.Poster !== "N/A" ? (
                 <Image
@@ -88,7 +99,7 @@ const Search = ({ placeholder }: { placeholder?: string }) => {
                   alt={movie.Title}
                   width={60}
                   height={90}
-                  className="object-contain w-[60px] h-[90px]"
+                  className="object-contain w-[60px] h-[90px] overflow-hidden"
                 />
               ) : (
                 <Skeleton className="w-[60px] h-[90px]" />
@@ -97,7 +108,7 @@ const Search = ({ placeholder }: { placeholder?: string }) => {
                 <h4 className="font-light text-base">{movie.Title}</h4>
                 <p className="text-muted-foreground text-left">{movie.Year}</p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}

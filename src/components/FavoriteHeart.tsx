@@ -12,7 +12,6 @@ type FavoriteHeartProps = {
 const FavoriteHeart = ({ isFavorite, onClick }: FavoriteHeartProps) => {
   const [pulse, setPulse] = useState(false);
 
-  // Trigger pulse only when liking
   const handleClick = () => {
     if (!isFavorite) {
       setPulse(true);
@@ -22,7 +21,7 @@ const FavoriteHeart = ({ isFavorite, onClick }: FavoriteHeartProps) => {
   };
 
   return (
-    <div className="relative flex items-center justify-center w-8 h-8">
+    <div className="relative flex items-center justify-center w-8 h-8 hover:bg-muted-foreground/10 rounded-full transition-colors duration-200 ease-in-out">
       <AnimatePresence>
         {pulse && (
           <motion.span

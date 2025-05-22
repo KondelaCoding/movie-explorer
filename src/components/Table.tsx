@@ -1,29 +1,49 @@
 "use client";
 
-import Image from "next/image";
 import { Movie } from "@/types";
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import FavoriteHeart from "./FavoriteHeart";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "./ui/skeleton";
+import PaginationComponent from "./PaginationComponent";
+import MovieCard from "./MovieCard";
 
-const Table = ({ query, page = 1 }: { query: string; page: number }) => {
-  const [data, setData] = useState<Movie[] | null | false>(null);
+type TableProps = {
+  query?: string;
+  page?: number;
+  data?: Movie[] | false | null;
+  totalPages?: number;
+};
+
+const Table = ({ query = "", page = 1, data: externalData, totalPages: externalTotalPages }: TableProps) => {
+  const [data, setData] = useState<Movie[] | null | false>(externalData ?? null);
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [totalPages, setTotalPages] = useState<number>(externalTotalPages ?? 0);
 
+  // Fetch only if data is not provided
   useEffect(() => {
+    if (typeof externalData !== "undefined") {
+      setData(externalData);
+      if (typeof externalTotalPages === "number") setTotalPages(externalTotalPages);
+      return;
+    }
     setData(null); // reset to loading state on new query/page
+    if (!query) {
+      setData(false);
+      return;
+    }
     const fetchData = async () => {
-      const res = await fetch(`/api/movie?query=${query}&page=${page}`);
+      const res = await fetch(`/api/movie-search?query=${query}&page=${page}`);
       const data = await res.json();
-      if (data.Response === "True") {
-        setData(data.Search);
-      } else {
+      if (data.Response === "False") {
         setData(false);
+        setTotalPages(0);
+        return;
       }
+      setData(data.Search);
+      setTotalPages(Math.ceil(Number(data.totalResults) / 10));
     };
     fetchData();
-  }, [query, page]);
+  }, [query, page, externalData, externalTotalPages]);
 
   useEffect(() => {
     const favs = JSON.parse(localStorage.getItem("favorites") || "[]");
@@ -41,15 +61,12 @@ const Table = ({ query, page = 1 }: { query: string; page: number }) => {
     localStorage.setItem("favorites", JSON.stringify(updated));
   };
 
-  // Skeletons for loading state
-  const skeletons = Array.from({ length: 10 });
-
   return (
     <div className="col-span-12">
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-5">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-5 mb-20">
         {data === null ? (
-          skeletons.map((_, i) => (
-            <Card key={i}>
+          Array.from({ length: 10 }).map((_, index) => (
+            <Card key={index}>
               <CardContent>
                 <Skeleton className="w-full aspect-[2/3] mb-2" />
               </CardContent>
@@ -70,38 +87,18 @@ const Table = ({ query, page = 1 }: { query: string; page: number }) => {
           </div>
         ) : (
           data.map((movie) => (
-            <Card key={movie.imdbID}>
-              <CardContent>
-                {movie.Poster !== "N/A" ? (
-                  <Image
-                    src={movie.Poster}
-                    alt={movie.Title}
-                    className="w-full mb-2 object-cover aspect-[2/3]"
-                    width={200}
-                    height={300}
-                  />
-                ) : (
-                  <div className="aspect-[2/3] w-full bg-muted-foreground flex items-center justify-center">
-                    <h3>Brak plakatu</h3>
-                  </div>
-                )}
-              </CardContent>
-              <CardHeader>
-                <CardTitle>
-                  <p>{movie.Title}</p>
-                </CardTitle>
-              </CardHeader>
-              <CardFooter className="flex items-center justify-between">
-                <CardDescription>{movie.Year}</CardDescription>
-                <FavoriteHeart
-                  isFavorite={favorites.includes(movie.imdbID)}
-                  onClick={() => toggleFavorite(movie.imdbID)}
-                />
-              </CardFooter>
-            </Card>
+            <MovieCard
+              key={movie.imdbID}
+              movie={movie}
+              isFavorite={favorites.includes(movie.imdbID)}
+              onToggleFavorite={toggleFavorite}
+            />
           ))
         )}
       </div>
+      {externalData && totalPages > 1 && (
+        <PaginationComponent query={query} totalPages={totalPages} currentPage={page} />
+      )}
     </div>
   );
 };

@@ -21,6 +21,7 @@ const moviePosterTitles = [
 
 const BannerCarousel = () => {
   const [images, setImages] = useState<string[]>([]);
+
   useEffect(() => {
     async function fetchMovies() {
       moviePosterTitles.forEach(async (title) => {
@@ -31,7 +32,7 @@ const BannerCarousel = () => {
     }
     fetchMovies();
   }, []);
-  //TODO: Add onClick to redirect to movie page or at least to the movie list page with the selected movie
+
   return (
     <div className="global-grid flex-col">
       <h2 className="font-light">Polecane</h2>
@@ -43,7 +44,7 @@ const BannerCarousel = () => {
         <CarouselContent className="-ml-5">
           {images.length === 0 ? (
             <>
-              {moviePosterTitles.map((title, index) => (
+              {moviePosterTitles.map((index) => (
                 <CarouselItem
                   key={index}
                   className="relative aspect-[2/2.8] pl-5 basis-1/2 md:basis-1/3 lg:basis-1/5 xl:basis-1/5"

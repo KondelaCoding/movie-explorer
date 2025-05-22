@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import PageWrapper from "@/components/ui/page-wrapper";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -24,11 +25,13 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${montserrat.variable} font-[family-name:var(--font-montserrat)] antialiased`}>
         <ThemeProvider>
-          <div className="min-h-screen h-full grid grid-rows-[auto_1fr_auto] grid-cols-1">
-            <Navbar />
-            <div className="pt-10">{children}</div>
-            <Footer />
-          </div>
+          <PageWrapper>
+            <div className="min-h-screen h-full grid grid-rows-[auto_1fr_auto] grid-cols-1">
+              <Navbar />
+              <div className="pt-10">{children}</div>
+              <Footer />
+            </div>
+          </PageWrapper>
         </ThemeProvider>
       </body>
     </html>
