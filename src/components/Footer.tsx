@@ -29,7 +29,7 @@ const Footer = () => {
             >
               OMDb API
             </Link>
-            <Link href={`mailto:${process.env.CONTACT_EMAIL}`} className="hover:underline transition-colors">
+            <Link href={`mailto:mkondela.formal@gmail.com`} className="hover:underline transition-colors">
               Kontakt
             </Link>
           </div>
